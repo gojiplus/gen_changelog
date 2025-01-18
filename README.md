@@ -1,2 +1,2 @@
-# gen_changelog
-GenAI Assisted Changelog Generation
+## GenChangelog: GenAI Assisted Changelog Generation
+
