@@ -1,17 +1,17 @@
-name: Generate Changelog
+name: Generate AI-Powered Changelog
 
 on:
-  workflow_dispatch: # Trigger manually from GitHub Actions
+  workflow_dispatch: # Manually triggered
   push:
     branches:
-      - main # Trigger on pushes to the main branch
+      - main # Automatically trigger on main branch pushes
 
 jobs:
   changelog:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout the repository
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -19,11 +19,13 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
-      run: pip install gitpython markdown
+    - name: Install Dependencies
+      run: pip install gitpython openai
 
-    - name: Generate Changelog
-      run: python scripts/gen_changelog.py
+    - name: Generate AI-Powered Changelog
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Securely use OpenAI API Key
+      run: python scripts/generate_ai_changelog.py
 
     - name: Upload Changelog
       uses: actions/upload-artifact@v3
