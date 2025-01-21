@@ -25,7 +25,7 @@ jobs:
     - name: Generate AI-Powered Changelog
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Securely use OpenAI API Key
-      run: python scripts/generate_ai_changelog.py
+      run: python scripts/gen_changelog.py
 
     - name: Upload Changelog
       uses: actions/upload-artifact@v3
