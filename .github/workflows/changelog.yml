@@ -27,6 +27,9 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Securely use OpenAI API Key
       run: python scripts/gen_changelog.py
 
+    - name: Debug - List Files in Working Directory
+      run: ls -la
+
     - name: Upload Changelog
       uses: actions/upload-artifact@v4
       with:
