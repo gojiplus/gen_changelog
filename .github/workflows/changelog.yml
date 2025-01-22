@@ -28,7 +28,7 @@ jobs:
       run: python scripts/gen_changelog.py
 
     - name: Upload Changelog
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: changelog
         path: changelog.md
