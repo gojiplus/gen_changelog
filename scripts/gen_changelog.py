@@ -1,14 +1,21 @@
 import git
 import os
 import openai
+import logging
 from datetime import datetime
+from tqdm import tqdm
 
 # Configure OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("OpenAI API key is not set. Please configure the 'OPENAI_API_KEY' environment variable.")
 
 # Initialize repository
 repo_path = os.getcwd()
 repo = git.Repo(repo_path)
+
+# Configure logging
+logging.basicConfig(filename='changelog_errors.log', level=logging.ERROR)
 
 def summarize_commit(commit, max_tokens=300):
     """
@@ -44,15 +51,15 @@ def summarize_commit(commit, max_tokens=300):
         )
         return response.choices[0].message["content"].strip()
     except Exception as e:
-        print(f"Error summarizing commit {commit.hexsha[:7]}: {e}")
+        logging.error(f"Error summarizing commit {commit.hexsha[:7]}: {e}")
         return "Summary unavailable."
 
-def generate_changelog():
+def generate_changelog(max_commits=50):
     """
     Generate a changelog with OpenAI-generated summaries.
     """
     changelog = []
-    for commit in repo.iter_commits():
+    for commit in tqdm(repo.iter_commits(max_count=max_commits), desc="Processing commits"):
         summary = summarize_commit(commit)
         changelog.append({
             "hash": commit.hexsha[:7],
@@ -68,8 +75,12 @@ def write_changelog_to_markdown(changelog, output_file="changelog.md"):
     """
     with open(output_file, "w") as f:
         f.write("# Changelog\n\n")
+        current_date = None
         for entry in changelog:
-            f.write(f"## {entry['date']} - {entry['hash']}\n")
+            if entry['date'] != current_date:
+                current_date = entry['date']
+                f.write(f"## {current_date}\n\n")
+            f.write(f"### {entry['hash']}\n")
             f.write(f"**Commit Message:** {entry['message']}\n\n")
             f.write(f"**AI Summary:** {entry['summary']}\n\n")
 
